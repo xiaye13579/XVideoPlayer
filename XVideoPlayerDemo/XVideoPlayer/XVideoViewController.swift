@@ -28,19 +28,29 @@ class XVideoViewController: UIViewController {
     var parentView : UIView?
     var controllerView: XVideoControlView?
     
-    var videoUrl = "http://zhy-media.meldingcloud.com/video/720p/1706f391e736415abc25cce022660f93/transcode_1534406970207/b751afc3-11ca-4d8d-8d69-c314222fe4ee.mp4"
+    var videoUrl = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let guesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureAction))
+        self.view.addGestureRecognizer(guesture)
 
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-//        player?.pause()
+
     }
     
-
+    @objc func tapGestureAction() {
+        if controllerView?.isHidden == true {
+            controllerView?.isHidden = false
+        }else{
+            controllerView?.isHidden = true
+        }
+        
+    }
+    
     func setupPlayer(){
         let avPlayer = AVPlayer()
         setupPlayer(avPlayer)
@@ -118,6 +128,7 @@ class XVideoViewController: UIViewController {
         progressObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
             guard let self1 = self else {return}
             self1.controllerView?.setPlayTime(self1.progressToTime(time))
+            self1.controllerView?.sliderProgress.value = Float(time.seconds)
         })
     }
     
@@ -171,6 +182,7 @@ class XVideoViewController: UIViewController {
             delegate?.onEvent(self, event: .endBuffing)
         case #keyPath(AVPlayerItem.duration):
             guard let duration = playerItem?.duration else {return}
+            controllerView?.sliderProgress.maximumValue = Float(duration.seconds)
             controllerView?.setDuration(progressToTime(duration))
         default:
             break
@@ -225,8 +237,17 @@ class XVideoViewController: UIViewController {
         }
     }
     
+    @objc func delayExecution(){
+        controllerView?.isHidden = true
+    }
+    
+    func seekTo(second:Int) {
+        player?.seek(to: CMTime(seconds: Double(second), preferredTimescale: 1))
+    }
+    
     func playPause(){
         debugPrint("playPause\(isPlaying())")
+        self.perform(#selector(delayExecution), with: nil, afterDelay: 3)
         if isPlaying() {
             player?.pause()
         } else {

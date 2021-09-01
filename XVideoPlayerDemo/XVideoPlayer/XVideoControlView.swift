@@ -21,7 +21,7 @@ class XVideoControlView: UIView {
     weak var playerViewController: XVideoViewController?
 
     func setup() {
-//        sliderProgress.setThumbImage(UIImage(named: "thumb_normal"), for: .normal)
+
     }
 
     @IBAction func playButtonClick(_ sender: Any) {
@@ -30,6 +30,10 @@ class XVideoControlView: UIView {
     
     @IBAction func fullscreenButtonClick(_ sender: Any) {
         playerViewController?.fullscreen()
+    }
+    
+    @IBAction func sliderChange(_ sender: ProgressSlider) {
+        playerViewController?.seekTo(second: Int(sliderProgress.value))
     }
     
     func showLoading(){

@@ -42,6 +42,9 @@
                         <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="YBN-o6-vVV" customClass="ProgressSlider" customModule="XVideoPlayerDemo" customModuleProvider="target">
                             <rect key="frame" x="50" y="5" width="320" height="31"/>
                             <color key="tintColor" systemColor="systemRedColor"/>
+                            <connections>
+                                <action selector="sliderChange:" destination="iN0-l3-epB" eventType="valueChanged" id="c0r-J9-PmR"/>
+                            </connections>
                         </slider>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YsF-sW-QS1">
                             <rect key="frame" x="438" y="4" width="32" height="32"/>
@@ -61,9 +64,6 @@
                             </constraints>
                             <inset key="imageEdgeInsets" minX="6" minY="6" maxX="6" maxY="6"/>
                             <state key="normal" image="sound_on.png"/>
-                            <connections>
-                                <action selector="fullscreenButtonClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="quq-YU-4gU"/>
-                            </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Lb-9Y-38g">
                             <rect key="frame" x="373" y="14" width="29" height="12"/>
