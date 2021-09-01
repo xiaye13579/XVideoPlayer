@@ -10,6 +10,13 @@ import AVFoundation
 
 class XVideoViewController: UIViewController {
     
+    private var playerRateContext = 0
+    private var playerTimeControlContext = 1
+    private var itemStatusContext = 2
+    private var itemDurationContext = 3
+    private var itemBufferEmptyContext = 4
+    private var itemBufferFullContext = 5
+    
     private var playerLayer: AVPlayerLayer?
     private var player: AVPlayer?
     private var playerItem: AVPlayerItem?
@@ -17,7 +24,6 @@ class XVideoViewController: UIViewController {
     private var progressObserverToken: Any?
     
     var delegate: XVideoPlayerControllerDelegate?
-    var isPlaying = false
     var isFullscreen = false
     var parentView : UIView?
     var controllerView: XVideoControlView?
@@ -31,7 +37,7 @@ class XVideoViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        player?.pause()
+//        player?.pause()
     }
     
 
@@ -53,6 +59,7 @@ class XVideoViewController: UIViewController {
         controllerView?.frame = view.bounds
         controllerView?.backgroundColor = UIColor.clear
         controllerView?.playerViewController = self
+        controllerView?.setup()
         if let controllerView = controllerView {
             view.addSubview(controllerView)
         }
@@ -62,22 +69,22 @@ class XVideoViewController: UIViewController {
         videoUrl = url
         guard let playUrl = URL(string: videoUrl) else {
             debugPrint("URL is invalid")
-            delegate?.onError(player: self, errorMessage: "URL is invalid")
+            delegate?.onError(self, errorMessage: "URL is invalid")
             return
         }
         playerItem = AVPlayerItem(url: playUrl)
         player?.replaceCurrentItem(with: playerItem)
         initProgressObserver()
+        initObservers()
     }
     
     func play(){
         player?.play()
-        delegate?.onEvent(player: self, event: XVideoPlayerEvent.play)
     }
     
     func pause(){
         player?.pause()
-        delegate?.onEvent(player: self, event: XVideoPlayerEvent.pause)
+        delegate?.onEvent(self, event: XVideoPlayerEvent.pause)
     }
     
     func isLandscapeVideo() -> Bool{
@@ -87,6 +94,10 @@ class XVideoViewController: UIViewController {
             return videoWidth > videoHeight
         }
         return true
+    }
+    
+    func isPlaying() -> Bool{
+        return player?.timeControlStatus == .playing
     }
     
     override var shouldAutorotate: Bool{
@@ -105,14 +116,87 @@ class XVideoViewController: UIViewController {
         let timeScale = CMTimeScale(NSEC_PER_SEC)
         let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
         progressObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
-            debugPrint(time.seconds)
+            guard let self1 = self else {return}
+            self1.controllerView?.setPlayTime(self1.progressToTime(time))
         })
+    }
+    
+    private func initObservers(){
+        setItemObservers(#keyPath(AVPlayerItem.status), context: &itemStatusContext)
+        setItemObservers(#keyPath(AVPlayerItem.duration), context: &itemDurationContext)
+        setItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferEmpty), context: &itemBufferEmptyContext)
+        setItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferFull), context: &itemBufferFullContext)
+        setItemObservers(#keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp), context: &itemBufferFullContext)
+        setPlayerObservers(#keyPath(AVPlayer.rate), context: &playerRateContext)
+        setPlayerObservers(#keyPath(AVPlayer.timeControlStatus), context: &playerTimeControlContext)
+    }
+    
+    func removeProgressObserver() {
+        if let progressObserverToken = progressObserverToken {
+            player?.removeTimeObserver(progressObserverToken)
+            self.progressObserverToken = nil
+        }
+    }
+    
+    func removeAllObservers(){
+        removeItemObservers(#keyPath(AVPlayerItem.status), context: &itemStatusContext)
+        removeItemObservers(#keyPath(AVPlayerItem.duration), context: &itemDurationContext)
+        removeItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferEmpty), context: &itemBufferEmptyContext)
+        removeItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferFull), context: &itemBufferFullContext)
+        removeItemObservers(#keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp), context: &itemBufferFullContext)
+        removePlayerObservers(#keyPath(AVPlayer.rate), context: &playerRateContext)
+        removePlayerObservers(#keyPath(AVPlayer.timeControlStatus), context: &playerTimeControlContext)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let keyPath = keyPath else {return}
+        guard let value = change?[.newKey] else {return}
+        handleObserverValue(keyPath, value: value)
+    }
+    
+    private func handleObserverValue(_ keyPath: String, value: Any?){
+        guard let value = value else {return}
+//        print("Observer: \(keyPath) : \(value)" )
+        switch(keyPath){
+        case #keyPath(AVPlayer.timeControlStatus):
+            handlePlayStatus(value as! Int)
+        case #keyPath(AVPlayerItem.isPlaybackBufferEmpty):
+            controllerView?.showLoading()
+            delegate?.onEvent(self, event: .buffing)
+        case #keyPath(AVPlayerItem.isPlaybackBufferFull):
+            controllerView?.hideLoading()
+            delegate?.onEvent(self, event: .endBuffing)
+        case #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp):
+            controllerView?.hideLoading()
+            delegate?.onEvent(self, event: .endBuffing)
+        case #keyPath(AVPlayerItem.duration):
+            guard let duration = playerItem?.duration else {return}
+            controllerView?.setDuration(progressToTime(duration))
+        default:
+            break
+        }
+    }
+    
+    private func handlePlayStatus(_ status: Int) {
+        let statusRaw = AVPlayer.TimeControlStatus.init(rawValue: status)
+        controllerView?.setButtonStatus(playing: statusRaw == .playing)
+        switch (statusRaw) {
+        case .playing:
+            delegate?.onEvent(self, event: .play)
+        case .paused:
+            delegate?.onEvent(self, event: .pause)
+        case .none:
+            debugPrint("none")
+        case .some(_):
+            debugPrint("nothing")
+        }
     }
     
     func fullscreen(){
         if isFullscreen {
             dismiss(animated: false, completion: {[weak self] in
                 if let self1 = self {
+                    self1.delegate?.onEvent(self1, event: .exitFullscreen)
                     self1.view.layoutIfNeeded()
                     if let parentView = self1.parentView {
                         self1.view.frame = parentView.bounds
@@ -127,10 +211,13 @@ class XVideoViewController: UIViewController {
                 self.modalPresentationStyle = .fullScreen
                 parentView = view.superview
                 topViewController.present(self, animated: false, completion: {[weak self] in
-                    self?.isFullscreen = true
-                    self?.playerLayer?.layoutIfNeeded()
-                    if let view = self?.view{
-                        self?.playerLayer?.frame = view.bounds
+                    if let self1 = self {
+                        self1.isFullscreen = true
+                        self1.delegate?.onEvent(self1, event: .fullscreen)
+                        self1.playerLayer?.layoutIfNeeded()
+                        if let view = self?.view{
+                            self1.playerLayer?.frame = view.bounds
+                        }
                     }
                 })
             }
@@ -139,7 +226,49 @@ class XVideoViewController: UIViewController {
     }
     
     func playPause(){
-        
+        debugPrint("playPause\(isPlaying())")
+        if isPlaying() {
+            player?.pause()
+        } else {
+            player?.play()
+        }
     }
+    
+    deinit {
+        removeAllObservers()
+        removeProgressObserver()
+    }
+}
 
+extension XVideoViewController{
+    func setItemObservers(_ keyPath: String, context: UnsafeMutableRawPointer){
+        playerItem?.addObserver(self, forKeyPath: keyPath, options: [.old, .new], context: context)
+    }
+    
+    func setPlayerObservers(_ keyPath: String, context: UnsafeMutableRawPointer){
+        player?.addObserver(self, forKeyPath: keyPath, options: [.old, .new], context: context)
+    }
+    
+    func removeItemObservers(_ keyPath: String, context: UnsafeMutableRawPointer){
+        playerItem?.removeObserver(self, forKeyPath: keyPath,  context: context)
+    }
+    
+    func removePlayerObservers(_ keyPath: String, context: UnsafeMutableRawPointer){
+        player?.removeObserver(self, forKeyPath: keyPath, context: context)
+    }
+    
+    func progressToTime(_ time: CMTime) -> String{
+        let p = Int(time.seconds)
+        let sec = p % 60
+        let min = p / 60
+        var secText = String(sec)
+        if(sec < 10){
+            secText = String("0\(sec)")
+        }
+        var minText = String(min)
+        if(min < 10){
+            minText = String("0\(min)")
+        }
+        return String("\(minText):\(secText)")
+    }
 }

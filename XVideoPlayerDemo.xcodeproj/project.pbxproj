@@ -28,6 +28,7 @@
 		F68BACDD26DF13C500B2F059 /* XVideoControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68BACDC26DF13C400B2F059 /* XVideoControlView.swift */; };
 		F68BACDF26DF141D00B2F059 /* XVideoControlView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F68BACDE26DF141D00B2F059 /* XVideoControlView.xib */; };
 		F68BACE126DF16B200B2F059 /* XVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68BACE026DF16B200B2F059 /* XVideoViewController.swift */; };
+		F68BACE926DF4DCB00B2F059 /* ProgressSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68BACE826DF4DCB00B2F059 /* ProgressSlider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		F68BACDC26DF13C400B2F059 /* XVideoControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XVideoControlView.swift; sourceTree = "<group>"; };
 		F68BACDE26DF141D00B2F059 /* XVideoControlView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = XVideoControlView.xib; sourceTree = "<group>"; };
 		F68BACE026DF16B200B2F059 /* XVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XVideoViewController.swift; sourceTree = "<group>"; };
+		F68BACE826DF4DCB00B2F059 /* ProgressSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressSlider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,7 +104,7 @@
 		F681680C26DDB4CA00016336 /* XVideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				F68BACCE26DE020600B2F059 /* GradientView.swift */,
+				F68BACE726DF4DB300B2F059 /* View */,
 				F68BACC726DDFDA100B2F059 /* resource */,
 				F68BACC026DDC7B400B2F059 /* XVideoPlayerControllerDelegate.swift */,
 				F68BACC226DDC99500B2F059 /* XVideoPlayerEvent.swift */,
@@ -126,6 +128,15 @@
 				F68BACC926DDFDCC00B2F059 /* play.png */,
 			);
 			path = resource;
+			sourceTree = "<group>";
+		};
+		F68BACE726DF4DB300B2F059 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				F68BACCE26DE020600B2F059 /* GradientView.swift */,
+				F68BACE826DF4DCB00B2F059 /* ProgressSlider.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -206,6 +217,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F68BACE926DF4DCB00B2F059 /* ProgressSlider.swift in Sources */,
 				F68BACC126DDC7B400B2F059 /* XVideoPlayerControllerDelegate.swift in Sources */,
 				F681680E26DDB5CC00016336 /* MainTableViewController.swift in Sources */,
 				F68BACC326DDC99500B2F059 /* XVideoPlayerEvent.swift in Sources */,

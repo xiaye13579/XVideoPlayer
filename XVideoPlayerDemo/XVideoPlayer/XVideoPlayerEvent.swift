@@ -13,4 +13,6 @@ public enum XVideoPlayerEvent: Int {
     case pause = 2
     case buffing = 3
     case endBuffing = 4
+    case fullscreen = 5
+    case exitFullscreen = 6
 }

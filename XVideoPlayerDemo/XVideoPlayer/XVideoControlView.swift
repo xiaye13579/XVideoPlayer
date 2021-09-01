@@ -13,12 +13,15 @@ class XVideoControlView: UIView {
     @IBOutlet weak var indicatorLoading: UIActivityIndicatorView!
     @IBOutlet weak var viewBottomController: GradientView!
     @IBOutlet weak var labelPlayTime: UILabel!
+    @IBOutlet weak var labelDuration: UILabel!
     @IBOutlet weak var buttonFullscreen: UIButton!
+    @IBOutlet weak var buttonMute: UIButton!
+    @IBOutlet weak var sliderProgress: ProgressSlider!
     
     weak var playerViewController: XVideoViewController?
-    
-    override class func awakeFromNib() {
-        super.awakeFromNib()
+
+    func setup() {
+//        sliderProgress.setThumbImage(UIImage(named: "thumb_normal"), for: .normal)
     }
 
     @IBAction func playButtonClick(_ sender: Any) {
@@ -39,6 +42,15 @@ class XVideoControlView: UIView {
         indicatorLoading.stopAnimating()
     }
     
+    func setButtonStatus(playing: Bool){
+        buttonPlayPause.setImage(UIImage(named: playing ? "pause.png" : "play.png"), for: .normal)
+    }
     
+    func setPlayTime(_ string: String){
+        labelPlayTime.text = string
+    }
     
+    func setDuration(_ string: String){
+        labelDuration.text = string
+    }
 }

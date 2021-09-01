@@ -8,6 +8,6 @@
 import Foundation
 
 protocol XVideoPlayerControllerDelegate {
-    func onEvent(player: XVideoViewController, event: XVideoPlayerEvent)
-    func onError(player: XVideoViewController, errorMessage: String)
+    func onEvent(_ player: XVideoViewController, event: XVideoPlayerEvent)
+    func onError(_ player: XVideoViewController, errorMessage: String)
 }
