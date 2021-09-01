@@ -22,6 +22,10 @@ class VideoPlayerViewController: UIViewController {
         
     }
     
+    @objc func delayExecution(){
+        videoPlayerViewController.controllerView?.isHidden = true
+    }
+    
     @IBAction func playVideo(_ sender: Any) {
         videoPlayerViewController.view.frame = videoView.bounds
         videoView.addSubview(videoPlayerViewController.view)
@@ -29,6 +33,8 @@ class VideoPlayerViewController: UIViewController {
         videoPlayerViewController.setVideoUrl("http://zhy-media.meldingcloud.com/video/720p/1706f391e736415abc25cce022660f93/transcode_1534406970207/b751afc3-11ca-4d8d-8d69-c314222fe4ee.mp4")
       //  videoPlayerViewController.setVideoUrl("http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8")
         videoPlayerViewController.play()
+        
+        self.perform(#selector(delayExecution), with: nil, afterDelay: 3)
     }
     
 }
