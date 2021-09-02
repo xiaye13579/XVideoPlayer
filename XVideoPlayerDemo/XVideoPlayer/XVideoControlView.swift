@@ -32,6 +32,10 @@ class XVideoControlView: UIView {
         playerViewController?.fullscreen()
     }
     
+    @IBAction func muteButtonClick(_ sender: Any) {
+        playerViewController?.mute()
+    }
+    
     @IBAction func sliderChange(_ sender: ProgressSlider) {
         playerViewController?.seekTo(second: Int(sliderProgress.value))
     }
@@ -46,8 +50,16 @@ class XVideoControlView: UIView {
         indicatorLoading.stopAnimating()
     }
     
-    func setButtonStatus(playing: Bool){
+    func setButtonStatus(_ playing: Bool){
         buttonPlayPause.setImage(UIImage(named: playing ? "pause.png" : "play.png"), for: .normal)
+    }
+    
+    func setFullscreenStatus(_ fullscreen: Bool) {
+        buttonFullscreen.setImage(UIImage(named: fullscreen ? "fullscreen_shrink.png" : "fullscreen_expand.png"), for: .normal)
+    }
+    
+    func setMuteButtonStatus(_ mute: Bool){
+        buttonMute.setImage(UIImage(named: mute ? "sound_mute.png" : "sound_on.png"), for: .normal)
     }
     
     func setPlayTime(_ string: String){

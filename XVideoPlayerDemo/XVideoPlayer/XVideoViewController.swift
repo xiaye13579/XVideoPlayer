@@ -10,12 +10,13 @@ import AVFoundation
 
 class XVideoViewController: UIViewController {
     
-    private var playerRateContext = 0
-    private var playerTimeControlContext = 1
-    private var itemStatusContext = 2
-    private var itemDurationContext = 3
-    private var itemBufferEmptyContext = 4
-    private var itemBufferFullContext = 5
+    private var playerRateContext = 11
+    private var playerTimeControlContext = 22
+    private var itemStatusContext = 33
+    private var itemDurationContext = 44
+    private var itemBufferEmptyContext = 55
+    private var itemBufferFullContext = 66
+    private var itemBufferLikelyToKeepUp = 77
     
     private var playerLayer: AVPlayerLayer?
     private var player: AVPlayer?
@@ -45,10 +46,9 @@ class XVideoViewController: UIViewController {
     @objc func tapGestureAction() {
         if controllerView?.isHidden == true {
             controllerView?.isHidden = false
-        }else{
+        } else {
             controllerView?.isHidden = true
         }
-        
     }
     
     func setupPlayer(){
@@ -57,6 +57,10 @@ class XVideoViewController: UIViewController {
     }
     
     func setupPlayer(_ avplayer: AVPlayer){
+        if let _ = player {
+            player?.pause()
+            player = nil
+        }
         player = avplayer
         playerLayer = AVPlayerLayer(player: player)
         if let playerLayer = playerLayer {
@@ -65,6 +69,7 @@ class XVideoViewController: UIViewController {
             playerLayer.frame = view.bounds
             view.layer.addSublayer(playerLayer)
         }
+        controllerView?.removeFromSuperview()
         controllerView = Bundle(for: XVideoControlView.self).loadNibNamed(String(describing: XVideoControlView.self), owner: self, options: nil)?.last as? XVideoControlView
         controllerView?.frame = view.bounds
         controllerView?.backgroundColor = UIColor.clear
@@ -72,6 +77,11 @@ class XVideoViewController: UIViewController {
         controllerView?.setup()
         if let controllerView = controllerView {
             view.addSubview(controllerView)
+        }
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+        } catch {
+            debugPrint(error)
         }
     }
     
@@ -110,6 +120,13 @@ class XVideoViewController: UIViewController {
         return player?.timeControlStatus == .playing
     }
     
+    func isMute() -> Bool{
+        if let player = player {
+            return player.isMuted
+        }
+        return false
+    }
+    
     override var shouldAutorotate: Bool{
         return false
     }
@@ -137,7 +154,7 @@ class XVideoViewController: UIViewController {
         setItemObservers(#keyPath(AVPlayerItem.duration), context: &itemDurationContext)
         setItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferEmpty), context: &itemBufferEmptyContext)
         setItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferFull), context: &itemBufferFullContext)
-        setItemObservers(#keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp), context: &itemBufferFullContext)
+        setItemObservers(#keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp), context: &itemBufferLikelyToKeepUp)
         setPlayerObservers(#keyPath(AVPlayer.rate), context: &playerRateContext)
         setPlayerObservers(#keyPath(AVPlayer.timeControlStatus), context: &playerTimeControlContext)
     }
@@ -154,7 +171,7 @@ class XVideoViewController: UIViewController {
         removeItemObservers(#keyPath(AVPlayerItem.duration), context: &itemDurationContext)
         removeItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferEmpty), context: &itemBufferEmptyContext)
         removeItemObservers(#keyPath(AVPlayerItem.isPlaybackBufferFull), context: &itemBufferFullContext)
-        removeItemObservers(#keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp), context: &itemBufferFullContext)
+        removeItemObservers(#keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp), context: &itemBufferLikelyToKeepUp)
         removePlayerObservers(#keyPath(AVPlayer.rate), context: &playerRateContext)
         removePlayerObservers(#keyPath(AVPlayer.timeControlStatus), context: &playerTimeControlContext)
     }
@@ -191,16 +208,18 @@ class XVideoViewController: UIViewController {
     
     private func handlePlayStatus(_ status: Int) {
         let statusRaw = AVPlayer.TimeControlStatus.init(rawValue: status)
-        controllerView?.setButtonStatus(playing: statusRaw == .playing)
+        controllerView?.setButtonStatus(statusRaw == .playing)
         switch (statusRaw) {
         case .playing:
             delegate?.onEvent(self, event: .play)
         case .paused:
             delegate?.onEvent(self, event: .pause)
         case .none:
-            debugPrint("none")
+            //            debugPrint("none")
+            break
         case .some(_):
-            debugPrint("nothing")
+            //            debugPrint("nothing")
+            break
         }
     }
     
@@ -216,6 +235,7 @@ class XVideoViewController: UIViewController {
                     self1.parentView?.addSubview(self1.view)
                     self1.isFullscreen = false
                     self1.playerLayer?.frame = self1.view.bounds
+                    self1.controllerView?.setFullscreenStatus(false)
                 }
             })
         } else {
@@ -230,11 +250,17 @@ class XVideoViewController: UIViewController {
                         if let view = self?.view{
                             self1.playerLayer?.frame = view.bounds
                         }
+                        self1.controllerView?.setFullscreenStatus(true)
                     }
                 })
             }
-            
         }
+        
+    }
+    
+    func mute() {
+        player?.isMuted = !isMute()
+        controllerView?.setMuteButtonStatus(isMute())
     }
     
     @objc func delayExecution(){
@@ -256,6 +282,7 @@ class XVideoViewController: UIViewController {
     }
     
     deinit {
+    
         removeAllObservers()
         removeProgressObserver()
     }
