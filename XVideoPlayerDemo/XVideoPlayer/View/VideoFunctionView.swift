@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GradientView: UIView {
+class VideoFunctionView: UIView {
     
     @IBInspectable var firstColor: UIColor = UIColor.clear {
         didSet {
@@ -30,12 +30,23 @@ class GradientView: UIView {
     func updateView() {
         let layer = self.layer as! CAGradientLayer
         layer.colors = [firstColor, secondColor].map {$0.cgColor}
-//        if (isHorizontal) {
         layer.startPoint = CGPoint(x: 0, y: 0)
         layer.endPoint = CGPoint (x: 0, y: 1)
-//        } else {
-//            layer.startPoint = CGPoint(x: 0.5, y: 0)
-//            layer.endPoint = CGPoint (x: 0.5, y: 1)
-//        }
+    }
+    
+    func fadeIn(){
+        UIView.animate(withDuration: 0.2) {
+            self.alpha = 1.0
+        } completion: { _ in
+            self.isHidden = false
+        }
+    }
+    
+    func fadeOut(){
+        UIView.animate(withDuration: 0.2) {
+            self.alpha = 0
+        } completion: { _ in
+            self.isHidden = true
+        }
     }
 }

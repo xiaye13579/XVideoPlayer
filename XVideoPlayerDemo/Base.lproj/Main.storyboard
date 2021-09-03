@@ -62,6 +62,9 @@
                                                 <constraint firstItem="paU-xJ-Yct" firstAttribute="leading" secondItem="p3u-ul-RfZ" secondAttribute="leading" constant="20" symbolic="YES" id="bkN-ze-SM6"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="sBb-gr-KwI" kind="show" id="AlS-pr-kqc"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -76,6 +79,47 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wVJ-Gj-HFF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="749" y="94"/>
+        </scene>
+        <!--Videos Table View Controller-->
+        <scene sceneID="UwT-zm-tv9">
+            <objects>
+                <tableViewController id="sBb-gr-KwI" customClass="VideosTableViewController" customModule="XVideoPlayerDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="2g2-jv-feg">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="videoCell" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="230" id="wfK-v3-BLI">
+                                <rect key="frame" x="0.0" y="24.5" width="414" height="230"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wfK-v3-BLI" id="YbY-CQ-iUH">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="230"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x0R-l7-bZX">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="230"/>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        </view>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="x0R-l7-bZX" firstAttribute="top" secondItem="YbY-CQ-iUH" secondAttribute="top" id="AHp-b3-X5f"/>
+                                        <constraint firstAttribute="trailing" secondItem="x0R-l7-bZX" secondAttribute="trailing" id="ho7-XK-gPe"/>
+                                        <constraint firstItem="x0R-l7-bZX" firstAttribute="leading" secondItem="YbY-CQ-iUH" secondAttribute="leading" id="pLh-KT-TPn"/>
+                                        <constraint firstAttribute="bottom" secondItem="x0R-l7-bZX" secondAttribute="bottom" id="xbm-Pw-Fm7"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="sBb-gr-KwI" id="9cX-3Q-f9n"/>
+                            <outlet property="delegate" destination="sBb-gr-KwI" id="yz0-ah-uRI"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="x4Q-kO-pgw"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SiI-C6-CAM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1844.9275362318842" y="398.4375"/>
         </scene>
         <!--Video Player View Controller-->
         <scene sceneID="31n-OL-9Rd">

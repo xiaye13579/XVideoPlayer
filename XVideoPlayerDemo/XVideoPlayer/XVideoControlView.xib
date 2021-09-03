@@ -27,11 +27,37 @@
                         <action selector="playButtonClick:" destination="iN0-l3-epB" eventType="touchUpInside" id="8dd-Ha-0kM"/>
                     </connections>
                 </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oRH-w1-6L2" customClass="VideoFunctionView" customModule="XVideoPlayerDemo" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="44" width="414" height="50"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="exb-HE-qhs">
+                            <rect key="frame" x="10" y="25" width="394" height="0.0"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="JQj-sK-NsM"/>
+                        <constraint firstItem="exb-HE-qhs" firstAttribute="leading" secondItem="oRH-w1-6L2" secondAttribute="leading" constant="10" id="VtC-bJ-1ni"/>
+                        <constraint firstAttribute="trailing" secondItem="exb-HE-qhs" secondAttribute="trailing" constant="10" id="hBp-Vj-AdO"/>
+                        <constraint firstItem="exb-HE-qhs" firstAttribute="centerY" secondItem="oRH-w1-6L2" secondAttribute="centerY" id="rLc-4K-E3y"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="secondColor">
+                            <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="firstColor">
+                            <color key="value" white="0.0" alpha="0.74939120550000005" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="prm-xL-bc3">
-                    <rect key="frame" x="188.66666666666666" y="429.66666666666669" width="37" height="37"/>
+                    <rect key="frame" x="188.66666666666666" y="608.66666666666663" width="37" height="37"/>
                     <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </activityIndicatorView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1mt-N6-aQ7" customClass="GradientView" customModule="XVideoPlayerDemo" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1mt-N6-aQ7" customClass="VideoFunctionView" customModule="XVideoPlayerDemo" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="822" width="414" height="74"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s3e-xa-LEc">
@@ -44,7 +70,7 @@
                             <rect key="frame" x="50" y="6" width="252" height="31"/>
                             <color key="tintColor" systemColor="systemRedColor"/>
                             <connections>
-                                <action selector="sliderChange:" destination="iN0-l3-epB" eventType="valueChanged" id="c0r-J9-PmR"/>
+                                <action selector="sliderValueChange:forEvent:" destination="iN0-l3-epB" eventType="valueChanged" id="8Z7-KM-A3o"/>
                             </connections>
                         </slider>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YsF-sW-QS1">
@@ -108,13 +134,16 @@
             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="M38-1B-arK" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="46w-CK-mcd"/>
+                <constraint firstItem="oRH-w1-6L2" firstAttribute="leading" secondItem="kWF-gc-FXr" secondAttribute="leading" id="4tw-Gy-nCb"/>
+                <constraint firstItem="kWF-gc-FXr" firstAttribute="trailing" secondItem="oRH-w1-6L2" secondAttribute="trailing" id="6BU-sf-5PD"/>
                 <constraint firstItem="prm-xL-bc3" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="G2A-el-EKm"/>
                 <constraint firstItem="YsF-sW-QS1" firstAttribute="bottom" secondItem="kWF-gc-FXr" secondAttribute="bottom" constant="-3" id="GIr-It-JOn"/>
                 <constraint firstItem="M38-1B-arK" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Nef-fd-ik6"/>
                 <constraint firstItem="1mt-N6-aQ7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="XRF-a7-C44"/>
+                <constraint firstItem="oRH-w1-6L2" firstAttribute="top" secondItem="kWF-gc-FXr" secondAttribute="top" id="Y3w-RV-E5z"/>
                 <constraint firstAttribute="bottom" secondItem="1mt-N6-aQ7" secondAttribute="bottom" id="dmS-Mx-KfW"/>
                 <constraint firstAttribute="trailing" secondItem="1mt-N6-aQ7" secondAttribute="trailing" id="f2R-NJ-q5l"/>
-                <constraint firstItem="prm-xL-bc3" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="rQ9-cL-eB1"/>
+                <constraint firstItem="prm-xL-bc3" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" multiplier="1.4" id="rQ9-cL-eB1"/>
             </constraints>
             <connections>
                 <outlet property="buttonFullscreen" destination="YsF-sW-QS1" id="B75-tE-s8H"/>
@@ -123,8 +152,10 @@
                 <outlet property="indicatorLoading" destination="prm-xL-bc3" id="i31-iI-jhe"/>
                 <outlet property="labelDuration" destination="8Lb-9Y-38g" id="oYV-mv-pGm"/>
                 <outlet property="labelPlayTime" destination="s3e-xa-LEc" id="uu9-HN-ELY"/>
+                <outlet property="labelVideoTitle" destination="exb-HE-qhs" id="ilp-h9-ayX"/>
                 <outlet property="sliderProgress" destination="YBN-o6-vVV" id="pVT-62-JIE"/>
                 <outlet property="viewBottomController" destination="1mt-N6-aQ7" id="ORJ-iS-ipz"/>
+                <outlet property="viewTopContainer" destination="oRH-w1-6L2" id="gVU-VS-9UR"/>
             </connections>
             <point key="canvasLocation" x="139" y="139"/>
         </view>

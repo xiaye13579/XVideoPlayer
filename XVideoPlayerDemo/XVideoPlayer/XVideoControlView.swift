@@ -9,19 +9,23 @@ import UIKit
 
 class XVideoControlView: UIView {
 
-    @IBOutlet weak var buttonPlayPause: UIButton!
-    @IBOutlet weak var indicatorLoading: UIActivityIndicatorView!
-    @IBOutlet weak var viewBottomController: GradientView!
-    @IBOutlet weak var labelPlayTime: UILabel!
-    @IBOutlet weak var labelDuration: UILabel!
-    @IBOutlet weak var buttonFullscreen: UIButton!
-    @IBOutlet weak var buttonMute: UIButton!
-    @IBOutlet weak var sliderProgress: ProgressSlider!
+    @IBOutlet private weak var buttonPlayPause: UIButton!
+    @IBOutlet private weak var indicatorLoading: UIActivityIndicatorView!
+    @IBOutlet private weak var viewBottomController: VideoFunctionView!
+    @IBOutlet private weak var viewTopContainer: VideoFunctionView!
+    @IBOutlet private weak var labelPlayTime: UILabel!
+    @IBOutlet private weak var labelDuration: UILabel!
+    @IBOutlet private weak var labelVideoTitle: UILabel!
+    @IBOutlet private weak var buttonFullscreen: UIButton!
+    @IBOutlet private weak var buttonMute: UIButton!
+    @IBOutlet private weak var sliderProgress: ProgressSlider!
     
     weak var playerViewController: XVideoViewController?
+    var isSliderDragging = false
+    var isShowing = true
 
     func setup() {
-
+        sliderProgress.isContinuous = false
     }
 
     @IBAction func playButtonClick(_ sender: Any) {
@@ -36,8 +40,14 @@ class XVideoControlView: UIView {
         playerViewController?.mute()
     }
     
-    @IBAction func sliderChange(_ sender: ProgressSlider) {
+
+    @IBAction func sliderValueChange(_ sender: ProgressSlider, forEvent event: UIEvent) {
         playerViewController?.seekTo(second: Int(sliderProgress.value))
+        if let touchEvent = event.allTouches?.first, touchEvent.phase == .moved {
+            isSliderDragging = true
+        } else {
+            isSliderDragging = false
+        }
     }
     
     func showLoading(){
@@ -48,6 +58,10 @@ class XVideoControlView: UIView {
     func hideLoading(){
         indicatorLoading.isHidden = true
         indicatorLoading.stopAnimating()
+    }
+    
+    func showHidePlayButton(_ show: Bool){
+        buttonPlayPause.isHidden = !show
     }
     
     func setButtonStatus(_ playing: Bool){
@@ -68,5 +82,32 @@ class XVideoControlView: UIView {
     
     func setDuration(_ string: String){
         labelDuration.text = string
+    }
+    
+    func showHideFunctionView(_ show: Bool){
+        debugPrint("showHideFunctionView:\(show)")
+        if show {
+            viewBottomController.fadeIn()
+            viewTopContainer.fadeIn()
+            showHidePlayButton(true)
+            isShowing = true
+        } else {
+            viewBottomController.fadeOut()
+            viewTopContainer.fadeOut()
+            showHidePlayButton(false)
+            isShowing = false
+        }
+    }
+    
+    func setTitle(_ text: String){
+        labelVideoTitle.text = text
+    }
+    
+    func setSliderMaxValue(_ value: Float){
+        sliderProgress.maximumValue = value
+    }
+    
+    func setSliderValue(_ value: Float){
+        sliderProgress.value = value
     }
 }
