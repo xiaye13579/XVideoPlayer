@@ -19,11 +19,11 @@ class XVideoViewController: UIViewController {
     private var itemBufferLikelyToKeepUp = 77
     
     private var playerLayer: AVPlayerLayer?
-    private var player: AVPlayer?
+    
     private var playerItem: AVPlayerItem?
     
     private var progressObserverToken: Any?
-    
+    private var player: AVPlayer?
     var delegate: XVideoPlayerControllerDelegate?
     var isFullscreen = false
     var parentView : UIView?
@@ -35,33 +35,23 @@ class XVideoViewController: UIViewController {
         super.viewDidLoad()
         let guesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureAction))
         self.view.addGestureRecognizer(guesture)
-
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
     }
     
     @objc func tapGestureAction() {
-        if controllerView?.isHidden == true {
-            controllerView?.isHidden = false
+        if controllerView?.isShowing == true {
+            controllerView?.showHideFunctionView(false)
         } else {
-            controllerView?.isHidden = true
+            controllerView?.showHideFunctionView(true)
         }
     }
     
     func setupPlayer(){
-        let avPlayer = AVPlayer()
-        setupPlayer(avPlayer)
-    }
-    
-    func setupPlayer(_ avplayer: AVPlayer){
         if let _ = player {
             player?.pause()
-            player = nil
+        } else {
+            player = AVPlayer()
         }
-        player = avplayer
+        playerLayer?.removeFromSuperlayer()
         playerLayer = AVPlayerLayer(player: player)
         if let playerLayer = playerLayer {
             playerLayer.videoGravity = .resizeAspect
@@ -83,6 +73,12 @@ class XVideoViewController: UIViewController {
         } catch {
             debugPrint(error)
         }
+       
+    }
+    
+    func setupPlayer(_ avplayer: AVPlayer){
+        player = avplayer
+        setupPlayer()
     }
     
     func setVideoUrl(_ url: String){
@@ -96,6 +92,10 @@ class XVideoViewController: UIViewController {
         player?.replaceCurrentItem(with: playerItem)
         initProgressObserver()
         initObservers()
+    }
+    
+    func setTitle(_ text: String){
+        controllerView?.setTitle(text)
     }
     
     func play(){
@@ -142,10 +142,13 @@ class XVideoViewController: UIViewController {
     private func initProgressObserver(){
         let timeScale = CMTimeScale(NSEC_PER_SEC)
         let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
+        removeProgressObserver()
         progressObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main, using: { [weak self] time in
             guard let self1 = self else {return}
-            self1.controllerView?.setPlayTime(self1.progressToTime(time))
-            self1.controllerView?.sliderProgress.value = Float(time.seconds)
+            if self1.controllerView?.isSliderDragging == false {
+                self1.controllerView?.setPlayTime(self1.progressToTime(time))
+                self1.controllerView?.setSliderValue(Float(time.seconds))
+            }
         })
     }
     
@@ -186,6 +189,9 @@ class XVideoViewController: UIViewController {
         guard let value = value else {return}
 //        print("Observer: \(keyPath) : \(value)" )
         switch(keyPath){
+//        case #keyPath(AVPlayerItem.status):
+//            controllerView?.showHidePlayButton(AVPlayerItem.Status(rawValue: value as! Int) == .readyToPlay)
+//            break
         case #keyPath(AVPlayer.timeControlStatus):
             handlePlayStatus(value as! Int)
         case #keyPath(AVPlayerItem.isPlaybackBufferEmpty):
@@ -199,8 +205,10 @@ class XVideoViewController: UIViewController {
             delegate?.onEvent(self, event: .endBuffing)
         case #keyPath(AVPlayerItem.duration):
             guard let duration = playerItem?.duration else {return}
-            controllerView?.sliderProgress.maximumValue = Float(duration.seconds)
-            controllerView?.setDuration(progressToTime(duration))
+            if duration.seconds > 0 {
+                controllerView?.setSliderMaxValue(Float(duration.seconds))
+                controllerView?.setDuration(progressToTime(duration))
+            }
         default:
             break
         }
@@ -242,15 +250,19 @@ class XVideoViewController: UIViewController {
             if let topViewController = XVideoUtil.getTopViewController(){
                 self.modalPresentationStyle = .fullScreen
                 parentView = view.superview
+                
                 topViewController.present(self, animated: false, completion: {[weak self] in
                     if let self1 = self {
                         self1.isFullscreen = true
                         self1.delegate?.onEvent(self1, event: .fullscreen)
                         self1.playerLayer?.layoutIfNeeded()
-                        if let view = self?.view{
+                        if let view = self?.view {
                             self1.playerLayer?.frame = view.bounds
+                            self1.controllerView?.needsUpdateConstraints()
+                            self1.controllerView?.layoutIfNeeded()
                         }
                         self1.controllerView?.setFullscreenStatus(true)
+                        
                     }
                 })
             }
@@ -264,7 +276,7 @@ class XVideoViewController: UIViewController {
     }
     
     @objc func delayExecution(){
-        controllerView?.isHidden = true
+        controllerView?.showHideFunctionView(false)
     }
     
     func seekTo(second:Int) {
@@ -272,7 +284,6 @@ class XVideoViewController: UIViewController {
     }
     
     func playPause(){
-        debugPrint("playPause\(isPlaying())")
         self.perform(#selector(delayExecution), with: nil, afterDelay: 3)
         if isPlaying() {
             player?.pause()
@@ -282,7 +293,6 @@ class XVideoViewController: UIViewController {
     }
     
     deinit {
-    
         removeAllObservers()
         removeProgressObserver()
     }
