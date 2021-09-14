@@ -85,7 +85,6 @@ class XVideoControlView: UIView {
     }
     
     func showHideFunctionView(_ show: Bool){
-        debugPrint("showHideFunctionView:\(show)")
         if show {
             viewBottomController.fadeIn()
             viewTopContainer.fadeIn()

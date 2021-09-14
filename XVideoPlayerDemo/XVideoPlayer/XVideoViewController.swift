@@ -10,6 +10,8 @@ import AVFoundation
 
 class XVideoViewController: UIViewController {
     
+    let controlViewDismissTime = TimeInterval(3)
+    
     private var playerRateContext = 11
     private var playerTimeControlContext = 22
     private var itemStatusContext = 33
@@ -41,7 +43,7 @@ class XVideoViewController: UIViewController {
         if controllerView?.isShowing == true {
             controllerView?.showHideFunctionView(false)
         } else {
-            controllerView?.showHideFunctionView(true)
+            showController()
         }
     }
     
@@ -189,20 +191,26 @@ class XVideoViewController: UIViewController {
         guard let value = value else {return}
 //        print("Observer: \(keyPath) : \(value)" )
         switch(keyPath){
-//        case #keyPath(AVPlayerItem.status):
-//            controllerView?.showHidePlayButton(AVPlayerItem.Status(rawValue: value as! Int) == .readyToPlay)
-//            break
+        case #keyPath(AVPlayerItem.status):
+            let v = AVPlayerItem.Status(rawValue: value as! Int)
+            if v == .readyToPlay {
+                prepareHideController()
+            }
+            break
         case #keyPath(AVPlayer.timeControlStatus):
             handlePlayStatus(value as! Int)
         case #keyPath(AVPlayerItem.isPlaybackBufferEmpty):
             controllerView?.showLoading()
             delegate?.onEvent(self, event: .buffing)
+            showController()
         case #keyPath(AVPlayerItem.isPlaybackBufferFull):
             controllerView?.hideLoading()
             delegate?.onEvent(self, event: .endBuffing)
+            prepareHideController()
         case #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp):
             controllerView?.hideLoading()
             delegate?.onEvent(self, event: .endBuffing)
+            prepareHideController()
         case #keyPath(AVPlayerItem.duration):
             guard let duration = playerItem?.duration else {return}
             if duration.seconds > 0 {
@@ -256,13 +264,13 @@ class XVideoViewController: UIViewController {
                         self1.isFullscreen = true
                         self1.delegate?.onEvent(self1, event: .fullscreen)
                         self1.playerLayer?.layoutIfNeeded()
-                        if let view = self?.view {
+                        if let view = self1.view {
                             self1.playerLayer?.frame = view.bounds
                             self1.controllerView?.needsUpdateConstraints()
                             self1.controllerView?.layoutIfNeeded()
                         }
                         self1.controllerView?.setFullscreenStatus(true)
-                        
+                        self1.prepareHideController()
                     }
                 })
             }
@@ -284,11 +292,22 @@ class XVideoViewController: UIViewController {
     }
     
     func playPause(){
-        self.perform(#selector(delayExecution), with: nil, afterDelay: 3)
         if isPlaying() {
             player?.pause()
         } else {
             player?.play()
+        }
+    }
+    
+    func showController(){
+        controllerView?.showHideFunctionView(true)
+        prepareHideController()
+    }
+    
+    func prepareHideController(){
+        if controllerView?.isShowing == true {
+            NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(delayExecution), object: nil)
+            self.perform(#selector(delayExecution), with: nil, afterDelay: controlViewDismissTime)
         }
     }
     
