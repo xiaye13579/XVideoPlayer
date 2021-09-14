@@ -25,7 +25,7 @@ class XVideoControlView: UIView {
     var isShowing = true
 
     func setup() {
-        sliderProgress.isContinuous = false
+        sliderProgress.isContinuous = true
     }
 
     @IBAction func playButtonClick(_ sender: Any) {
@@ -42,11 +42,11 @@ class XVideoControlView: UIView {
     
 
     @IBAction func sliderValueChange(_ sender: ProgressSlider, forEvent event: UIEvent) {
-        playerViewController?.seekTo(second: Int(sliderProgress.value))
         if let touchEvent = event.allTouches?.first, touchEvent.phase == .moved {
             isSliderDragging = true
         } else {
             isSliderDragging = false
+            playerViewController?.seekTo(second: Int(sliderProgress.value))
         }
     }
     

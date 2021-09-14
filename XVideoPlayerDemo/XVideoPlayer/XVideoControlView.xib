@@ -28,10 +28,10 @@
                     </connections>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oRH-w1-6L2" customClass="VideoFunctionView" customModule="XVideoPlayerDemo" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="44" width="414" height="50"/>
+                    <rect key="frame" x="0.0" y="44" width="414" height="40"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="exb-HE-qhs">
-                            <rect key="frame" x="10" y="25" width="394" height="0.0"/>
+                            <rect key="frame" x="10" y="18" width="394" height="0.0"/>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -39,10 +39,10 @@
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="50" id="JQj-sK-NsM"/>
+                        <constraint firstAttribute="height" constant="40" id="JQj-sK-NsM"/>
                         <constraint firstItem="exb-HE-qhs" firstAttribute="leading" secondItem="oRH-w1-6L2" secondAttribute="leading" constant="10" id="VtC-bJ-1ni"/>
                         <constraint firstAttribute="trailing" secondItem="exb-HE-qhs" secondAttribute="trailing" constant="10" id="hBp-Vj-AdO"/>
-                        <constraint firstItem="exb-HE-qhs" firstAttribute="centerY" secondItem="oRH-w1-6L2" secondAttribute="centerY" id="rLc-4K-E3y"/>
+                        <constraint firstItem="exb-HE-qhs" firstAttribute="centerY" secondItem="oRH-w1-6L2" secondAttribute="centerY" multiplier="0.9" id="rLc-4K-E3y"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="secondColor">
